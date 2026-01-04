@@ -5,7 +5,7 @@ CS2 Server Manager is a TUI tool that allows you to choose CS2 servers you want 
 
 ## How it works
 
-It takes relays from https://api.steampowered.com/ISteamApps/GetSDRConfig/v1?appid=730 and allows you to select relays you want. After you chose relays, it uses firewall rules (using iptables on linux and netsh on windows) to block server you didn't choose.
+It takes relays from https://api.steampowered.com/ISteamApps/GetSDRConfig/v1?appid=730 and allows you to select relays you want. After you made your choice and chose "Block relays you don't want", it uses firewall rules (using iptables on linux and netsh on windows) to block servers you didn't choose.
 
 ## Can i get banned
 
@@ -15,7 +15,7 @@ No, because it just doesn't allow your PC to connect to some IPs. It doesn't int
 ### Releases
 
 1. Go to https://github.com/dom1torii/cs2-server-manager/releases/tag/0.0.1 
-2. Download and extract the archive
+2. Download and extract the archive that matches your system
 
 ### Build from source
 
