@@ -24,6 +24,12 @@ No, because it just doesn't allow your PC to connect to some IPs. It doesn't int
 3. `cd` into the folder
 4. Run `go build ./cmd/cs2-server-manager/`
 
+## Planned features
+
+Based on priority, top to bottom: 
+- UI/UX improvements
+- Server presets
+
 ## Notes
 
 The script is not fully accurate and sometimes will connect you to server that are **routed** through the server you chose. 
