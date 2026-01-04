@@ -29,6 +29,9 @@ No, because it just doesn't allow your PC to connect to some IPs. It doesn't int
 Based on priority, top to bottom: 
 - UI/UX improvements
 - Server presets
+- Global/China version switch
+- Settings and config file
+- Display ping to each server
 
 ## Notes
 
