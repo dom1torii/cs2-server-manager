@@ -9,7 +9,7 @@ It takes relays from https://api.steampowered.com/ISteamApps/GetSDRConfig/v1?app
 
 ## Can i get banned
 
-No, because it just doesn't allow your PC to connect to some IPs. It doesn't interact with the game at all and isn't a cheat.
+No, because all it does is prevent your PC from connecting to certain IPs. It doesn't interact with the game at all and isn't a cheat.
 
 ## Installation
 ### Releases
@@ -35,7 +35,7 @@ Based on priority, top to bottom:
 
 ## Notes
 
-The script is not fully accurate and sometimes will connect you to server that are **routed** through the server you chose. 
+The tool is not fully accurate and sometimes will connect you to server that are **routed** through the server you chose. 
 Its also possible that you wont find the server you selected. 
 If you have any ideas how to fix that, pull requests are welcome :)
 
