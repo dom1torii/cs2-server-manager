@@ -181,9 +181,9 @@ func InitSelectPage(ui *UI, cfg *config.Config) tview.Primitive {
       row := i % rows
       col := (i / rows) * 2
 
-      checkbox := "[ ]"
+      checkbox := "[::b][ ]"
       if item.checked {
-        checkbox = "[✓]"
+        checkbox = "[::b][[green]✓[white]]"
       }
 
       table.SetCell(row, col,
