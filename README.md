@@ -14,7 +14,7 @@ No, because all it does is prevent your PC from connecting to certain IPs. It do
 ## Installation
 ### Releases
 
-1. Go to https://github.com/dom1torii/cs2-server-manager/releases/tag/0.0.1 
+1. Go to https://github.com/dom1torii/cs2-server-manager/releases
 2. Download and extract the archive that matches your system
 
 ### Build from source
