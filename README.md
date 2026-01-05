@@ -17,6 +17,12 @@ No, because all it does is prevent your PC from connecting to certain IPs. It do
 1. Go to https://github.com/dom1torii/cs2-server-manager/releases
 2. Download and extract the archive that matches your system
 
+### Scoop
+
+1. Install Scoop -> https://scoop.sh/
+2. Add a cs2 bucket with `scoop add bucket cs2 https://github.com/dom1torii/cs2`
+3. Install with `scoop install cs2/cs2-server-manager`
+
 ### Build from source
 
 1. Install GoLang -> https://go.dev/doc/install
