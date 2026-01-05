@@ -28,17 +28,3 @@ archives:
 
 changelog:
   disable: true
-
-release:
-  disable: true
-
-scoops:
-  - name: cs2-server-manager
-  - url_template: http://github.com/dom1torii/cs2-server-manager/releases/{{ .Tag }}/{{ .ArtifactName }}
-  - homepage: "https://github.com/dom1torii/cs2-server-manager"
-  - description: "Cross-platform TUI CS2 server picker and manager written in Go."
-  - license: MIT
-  - repository:
-      owner: dom1torii
-      name: cs2-server-manager
-      branch: main
