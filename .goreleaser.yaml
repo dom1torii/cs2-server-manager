@@ -28,6 +28,3 @@ archives:
 
 changelog:
   disable: true
-
-release:
-  footer: |
