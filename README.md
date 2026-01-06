@@ -12,19 +12,33 @@ It takes relays from https://api.steampowered.com/ISteamApps/GetSDRConfig/v1?app
 No, because all it does is prevent your PC from connecting to certain IPs. It doesn't interact with the game at all and isn't a cheat.
 
 ## Installation
-### Releases
+
+### Linux 
+
+#### Releases
 
 1. Go to https://github.com/dom1torii/cs2-server-manager/releases
-2. Download and extract the archive that matches your system
+2. Download and extract **cs2-server-manager_Linux_x86_64.tar.gz** from the latest release
 
-### Scoop (windows)
+#### AUR (Arch Linux) 
+
+Soon
+
+### Windows
+
+#### Scoop
 
 1. Open your terminal
 2. Install Scoop -> https://scoop.sh/
 3. Add a cs2 bucket with `scoop add bucket cs2 https://github.com/dom1torii/cs2`
 4. Install with `scoop install cs2/cs2-server-manager`
 
-### Build from source
+#### Releases
+
+1. Go to https://github.com/dom1torii/cs2-server-manager/releases
+2. Download and extract **cs2-server-manager_Windows_x86_64.zip** from the latest release
+
+### Building from source
 
 1. Install GoLang -> https://go.dev/doc/install
 2. Clone the repo `git clone https://github.com/dom1torii/cs2-server-manager.git`
