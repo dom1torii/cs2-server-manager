@@ -86,18 +86,9 @@ func UnBlockIps(onDone func()) {
 	customChain := "CS2_BLOCKLIST"
 
 	// untie and delete custom chain
-	untieChain := exec.Command("iptables", "-D", chain, "-j", customChain)
-	if err := untieChain.Run(); err != nil {
-		log.Fatalln("Error untying chain: ", err)
-	}
-	flushChain := exec.Command("iptables", "-F", customChain)
-	if err := flushChain.Run(); err != nil {
-		log.Fatalln("Error flushing chain: ", err)
-	}
-	deleteChain := exec.Command("iptables", "-X", customChain)
-	if err := deleteChain.Run(); err != nil {
-		log.Fatalln("Error deleting chain: ", err)
-	}
+	exec.Command("iptables", "-D", chain, "-j", customChain).Run()
+	exec.Command("iptables", "-F", customChain).Run()
+	exec.Command("iptables", "-X", customChain).Run()
 
 	log.Println("Unblocked server ips from txt")
 
