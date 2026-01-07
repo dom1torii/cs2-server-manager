@@ -6,11 +6,17 @@ import (
 	"github.com/dom1torii/cs2-server-manager/internal/config"
 	"github.com/dom1torii/cs2-server-manager/internal/platform/sudo"
 	"github.com/dom1torii/cs2-server-manager/internal/tui"
+	"github.com/dom1torii/cs2-server-manager/internal/cli"
 )
 
 func main() {
 	sudo.CheckIfSudo()
 	cfg := config.Init()
+
+	if cli.IsCLIMode(cfg) {
+		cli.HandleFlags(cfg)
+		return
+	}
 
 	ui := tui.New()
 	tui.SetupPages(ui, cfg)

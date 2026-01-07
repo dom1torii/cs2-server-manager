@@ -50,6 +50,7 @@ func FetchRelays() (Response, error) {
 	}
 
 	response.Pops = filterPops(response.Pops)
+	log.Println(response)
 
 	return response, nil
 }

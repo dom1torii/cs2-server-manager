@@ -4,6 +4,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"strings"
 
 	"github.com/spf13/pflag"
 
@@ -14,6 +15,14 @@ type Config struct {
 	IpsPath  string
 	LogsPath string
 	Logging  bool
+
+	// cli mode
+	ListRelays bool
+	SelectRelays []string
+	BlockRelays bool
+	UnBlockRelays bool
+	ToBlockCount bool
+	BlockedCount bool
 }
 
 func Init() *Config {
@@ -26,10 +35,28 @@ func Init() *Config {
 	logFlag := pflag.BoolP("log", "l", false, "Enable logging. Default path: {homedir}/cs2sp.log")
 	logPath := pflag.String("logpath", "", "Specify custom log file path.")
 
+	listRelays := pflag.Bool("listrelays", false, "List available relays")
+	selectRelays := pflag.String("selectrelays", "", "Select relays from the list (separated with comma)")
+	blockRelays := pflag.Bool("blockrelays", false, "Block selected relays")
+	unBlockRelays := pflag.Bool("unblockrelays", false, "Unblock selected relays")
+	toBlockCount := pflag.Bool("toblockcount", false, "Prints amount of relays in your ips file")
+	blockedCount := pflag.Bool("blockedcount", false, "Prints amount of relays in your ips file")
+
 	pflag.Parse()
 
 	fs.EnsureDirectory(*ipsPath)
 	cfg.IpsPath = *ipsPath
+
+	cfg.ListRelays = *listRelays
+	if *selectRelays != "" {
+    cfg.SelectRelays = strings.Split(*selectRelays, ",")
+  }
+	cfg.BlockRelays = *blockRelays
+	cfg.UnBlockRelays = *unBlockRelays
+	cfg.ToBlockCount = *toBlockCount
+	cfg.BlockedCount = *blockedCount
+
+
 
 	if *logFlag {
 		path := *logPath
