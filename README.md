@@ -46,7 +46,6 @@ scoop install cs2/cs2-server-manager
 - UI/UX improvements
 - Global/China version switch
 - Settings and config file
-- Display ping to each server
 
 ## Notes
 
