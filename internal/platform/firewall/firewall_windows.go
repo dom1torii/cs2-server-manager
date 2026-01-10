@@ -92,6 +92,7 @@ func GetBlockedIpCount() (int, error) {
 		return 0, nil
 	}
 
+	// find ips and add them together
 	count := 0
 	for line := range strings.SplitSeq(string(output), "\n") {
 		if strings.Contains(line, "RemoteIP:") {
@@ -115,4 +116,36 @@ func GetBlockedIpCount() (int, error) {
 	}
 
 	return 0, nil
+}
+
+func IsIpBlocked(ip string) bool {
+  cmd := exec.Command("netsh", "advfirewall", "firewall", "show", "rule", "name=CS2_BLOCKLIST")
+  output, err := cmd.Output()
+  if err != nil {
+    return false
+  }
+
+  // find the ip and return true if its blocked and false if its not
+  for line := range strings.SplitSeq(string(output), "\n") {
+	  if strings.Contains(line, "RemoteIP:") {
+      parts := strings.SplitN(line, ":", 2)
+      if len(parts) < 2 {
+        return false
+      }
+
+      ipList := strings.TrimSpace(parts[1])
+      for entry := range strings.SplitSeq(ipList, ",") {
+        cleanEntry := strings.TrimSpace(entry)
+        if strings.Contains(cleanEntry, "/") {
+          cleanEntry = strings.Split(cleanEntry, "/")[0]
+        }
+
+        if cleanEntry == ip {
+          return true
+        }
+      }
+	  }
+  }
+
+  return false
 }

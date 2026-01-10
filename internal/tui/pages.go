@@ -120,6 +120,7 @@ type popItem struct {
 	key     string
 	desc    string
 	ping    string
+	blocked bool
 	checked bool
 }
 
@@ -136,10 +137,12 @@ func InitSelectPage(ui *UI, cfg *config.Config) tview.Primitive {
 
 	var items []popItem
 	for key, pop := range response.Pops {
+		ipAddr := pop.Relays[0].Ipv4
 		items = append(items, popItem{
 			key:  key,
 			desc: pop.Desc,
 			ping: " (...)",
+			blocked: firewall.IsIpBlocked(ipAddr),
 		})
 	}
 
@@ -200,7 +203,6 @@ func InitSelectPage(ui *UI, cfg *config.Config) tview.Primitive {
 
 	// ping 20 ips at a time
 	maxPings := make(chan struct{}, 20)
-
 	for i := range items {
 		ipToPing := response.Pops[items[i].key].Relays[0].Ipv4
 
@@ -386,10 +388,17 @@ func updatePing(ui *UI, item *popItem, ip string, onUpdate func()) {
 	ping := ips.GetPing(ip)
 
 	ui.App.QueueUpdateDraw(func() {
+		ms := ping.Milliseconds()
 		if ping > 0 {
-			item.ping = fmt.Sprintf(" [yellow](%dms)[white]", ping.Milliseconds())
+			if ms < 100 {
+				item.ping = fmt.Sprintf(" [green](%dms)[white]", ms)
+			} else {
+				item.ping = fmt.Sprintf(" [red](%dms)[white]", ms)
+			}
+		} else if item.blocked == true || ping == -1 {
+			item.ping = " [orange](blocked)[white]"
 		} else {
-			item.ping = " [red](timed out)[white]"
+			item.ping = " [purple](timed out)[white]"
 		}
 		onUpdate()
 	})

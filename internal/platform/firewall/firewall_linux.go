@@ -120,3 +120,9 @@ func GetBlockedIpCount() (int, error) {
 	}
 	return count, nil
 }
+
+func IsIpBlocked(ip string) bool {
+    cmd := exec.Command("iptables", "-C", "CS2_BLOCKLIST", "-s", ip, "-j", "DROP")
+    err := cmd.Run()
+    return err == nil
+}

@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"time"
+	"strings"
 
 	"github.com/dom1torii/cs2-server-manager/internal/config"
 	"github.com/prometheus-community/pro-bing"
@@ -48,13 +49,17 @@ func GetPing(ip string) time.Duration {
 
 	pinger.SetPrivileged(true)
 
-	pinger.Count = 1
+	pinger.Count = 3
 	pinger.Timeout = time.Millisecond * 500
 
 	err = pinger.Run()
 	if err != nil {
-		log.Fatalln("Failed to run pinger: ", err)
-	}
+		// don't do anything if ip is blocked with firewall
+    if strings.Contains(err.Error(), "operation not permitted") {
+        return -1
+    }
+    log.Fatalln("Failed to run pinger: ", err)
+  }
 
 	stats := pinger.Statistics()
 	return stats.AvgRtt
