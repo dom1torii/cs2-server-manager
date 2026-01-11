@@ -1,6 +1,9 @@
 package tui
 
 import (
+	"sort"
+	"strings"
+
 	"github.com/dom1torii/cs2-server-manager/internal/ips"
 	"github.com/dom1torii/cs2-server-manager/internal/presets"
 
@@ -36,6 +39,14 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 	case relaysMsg:
+		sort.SliceStable(msg, func(i, j int) bool {
+			keyI := getStringToSort(msg[i].Desc)
+			keyJ := getStringToSort(msg[j].Desc)
+			if keyI != keyJ {
+				return keyI < keyJ
+			}
+			return strings.ToLower(msg[i].Desc) < strings.ToLower(msg[j].Desc)
+		})
 		m.Relays = msg
 		return m, m.refreshRelays()
 
