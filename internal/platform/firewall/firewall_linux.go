@@ -102,27 +102,28 @@ func CustomChainExists() bool {
 	return cmd.Run() == nil
 }
 
-func GetBlockedIpCount() (int, error) {
-	cmd := exec.Command("iptables", "-L", "CS2_BLOCKLIST", "-n", "-v")
+func GetBlockedIps() map[string]bool {
+	blocked := make(map[string]bool)
+
+	cmd := exec.Command("iptables", "-S", "CS2_BLOCKLIST")
 	output, err := cmd.Output()
 	if err != nil {
-		return 0, err
+		return blocked
 	}
 
-	lines := strings.Split(string(output), "\n")
-	count := 0
-	for _, line := range lines {
-		line = strings.TrimSpace(line)
-		if line == "" || strings.HasPrefix(line, "Chain") || strings.HasPrefix(line, "pkts") {
-			continue
+	lines := strings.SplitSeq(string(output), "\n")
+	for line := range lines {
+		if strings.Contains(line, "-d ") {
+			fields := strings.Fields(line)
+			for i, f := range fields {
+				if f == "-d" && i+1 < len(fields) {
+					ip := fields[i+1]
+					cleanIP := strings.Split(ip, "/")[0]
+					blocked[cleanIP] = true
+				}
+			}
 		}
-		count++
 	}
-	return count, nil
-}
 
-func IsIpBlocked(ip string) bool {
-	cmd := exec.Command("iptables", "-C", "CS2_BLOCKLIST", "-s", ip, "-j", "DROP")
-	err := cmd.Run()
-	return err == nil
+	return blocked
 }
