@@ -57,7 +57,7 @@ If you have any ideas how to fix that, pull requests are welcome :)
 
 ## Libraries used
 
-https://github.com/charmbracelet/bubbletea and others from [Charm](https://charm.land/) - TUI. 
-https://github.com/spf13/pflag - CLI flags. 
-https://github.com/muesli/reflow - Small library for text wrapping. 
-https://github.com/prometheus-community/pro-bing - For pinging IP addresses. 
+https://github.com/charmbracelet/bubbletea and others from [Charm](https://charm.land/) - TUI.  
+https://github.com/spf13/pflag - CLI flags.  
+https://github.com/muesli/reflow - Small library for text wrapping.  
+https://github.com/prometheus-community/pro-bing - For pinging IP addresses.  
