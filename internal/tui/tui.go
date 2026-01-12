@@ -43,6 +43,7 @@ type model struct {
 	RelaysChecked   map[int]struct{}
 	Pings           map[int]time.Duration
 	Pinged          int
+	BlockedMap map[string]bool
 	PresetKeys      []string
 
 	IpsCount     int
@@ -61,6 +62,7 @@ func InitialModel(cfg *config.Config) *model {
 		cfg:             cfg,
 		RelaysSelection: 0,
 		RelaysChecked:   make(map[int]struct{}),
+		BlockedMap:      make(map[string]bool),
 		Pings:           make(map[int]time.Duration),
 
 		StartSelection:  0,

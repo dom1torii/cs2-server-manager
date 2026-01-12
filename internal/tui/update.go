@@ -16,7 +16,8 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case statusMsg:
 		m.IpsCount = msg.ipsCount
 		m.BlockedCount = msg.blockedCount
-		return m, nil
+		m.BlockedMap = msg.blockedMap
+		return m, m.refreshRelays()
 
 	case presetsMsg:
 		m.PresetKeys = msg
@@ -24,19 +25,18 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case isFileEmptyMsg:
 		if msg {
-			ips.WriteIpsToFile(m.getUnSelectedIps(), m.cfg)
 			m.state = stateStart
-			return m, m.updateStatus()
+			return m, tea.Sequence(
+				writeIps(m),
+				m.updateStatus(),
+			)
 		} else {
 			m.state = stateConfirm
 			return m, nil
 		}
 
 	case firewallMsg:
-		return m, tea.Batch(
-			m.refreshRelays(),
-			m.updateStatus(),
-		)
+		return m, m.updateStatus()
 
 	case tea.WindowSizeMsg:
 		m.width = msg.Width

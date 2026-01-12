@@ -85,67 +85,42 @@ func CustomChainExists() bool {
 	return cmd.Run() == nil
 }
 
-func GetBlockedIpCount() (int, error) {
+func GetBlockedIps() map[string]bool {
+	blocked := make(map[string]bool)
+
 	cmd := exec.Command("netsh", "advfirewall", "firewall", "show", "rule", "name=CS2_BLOCKLIST")
 	output, err := cmd.Output()
 	if err != nil {
-		return 0, nil
+		return blocked
 	}
 
-	// find ips and add them together
-	count := 0
-	for line := range strings.SplitSeq(string(output), "\n") {
+	lines := strings.SplitSeq(string(output), "\n")
+	for line := range lines {
 		if strings.Contains(line, "RemoteIP:") {
 			parts := strings.SplitN(line, ":", 2)
 			if len(parts) < 2 {
 				continue
 			}
 
-			ipString := strings.TrimSpace(parts[1])
-			if ipString == "" || ipString == "Any" {
-				return 0, nil
-			}
-
-			for ip := range strings.SplitSeq(ipString, ",") {
-				if strings.TrimSpace(ip) != "" {
-					count++
-				}
-			}
-			return count, nil
-		}
-	}
-
-	return 0, nil
-}
-
-func IsIpBlocked(ip string) bool {
-	cmd := exec.Command("netsh", "advfirewall", "firewall", "show", "rule", "name=CS2_BLOCKLIST")
-	output, err := cmd.Output()
-	if err != nil {
-		return false
-	}
-
-	// find the ip and return true if its blocked and false if its not
-	for line := range strings.SplitSeq(string(output), "\n") {
-		if strings.Contains(line, "RemoteIP:") {
-			parts := strings.SplitN(line, ":", 2)
-			if len(parts) < 2 {
-				return false
-			}
-
 			ipList := strings.TrimSpace(parts[1])
-			for entry := range strings.SplitSeq(ipList, ",") {
+			if ipList == "" || ipList == "Any" {
+				continue
+			}
+
+			entries := strings.SplitSeq(ipList, ",")
+			for entry := range entries {
 				cleanEntry := strings.TrimSpace(entry)
 				if strings.Contains(cleanEntry, "/") {
 					cleanEntry = strings.Split(cleanEntry, "/")[0]
 				}
 
-				if cleanEntry == ip {
-					return true
+				if cleanEntry != "" {
+					blocked[cleanEntry] = true
 				}
 			}
+			break
 		}
 	}
 
-	return false
+	return blocked
 }

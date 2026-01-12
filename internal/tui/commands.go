@@ -39,40 +39,34 @@ func getRelays() tea.Cmd {
 	}
 }
 
-func getPingToIp(index int, ip string) tea.Cmd {
-	return func() tea.Msg {
-		duration := ips.GetPing(ip)
-		return pingMsg{index: index, duration: duration}
-	}
+func getPingToIp(index int, ip string, isBlocked bool) tea.Cmd {
+  return func() tea.Msg {
+    if isBlocked {
+      return pingMsg{index: index, duration: -1}
+    }
+    duration := ips.GetPing(ip)
+    return pingMsg{index: index, duration: duration}
+  }
 }
 
 func (m *model) pingBatch(startIndex int) tea.Cmd {
-	batchSize := 20
-	var cmds []tea.Cmd
+  batchSize := 20
+  var cmds []tea.Cmd
 
-	for i := startIndex; i < startIndex+batchSize && i < len(m.Relays); i++ {
-		// only ping if its not blocked
-		if _, exists := m.Pings[i]; !exists {
-			if len(m.Relays[i].Relays) > 0 {
-				cmds = append(cmds, getPingToIp(i, m.Relays[i].Relays[0].Ipv4))
-			}
-		}
-	}
-	return tea.Batch(cmds...)
+  for i := startIndex; i < startIndex+batchSize && i < len(m.Relays); i++ {
+    if len(m.Relays[i].Relays) > 0 {
+      ip := m.Relays[i].Relays[0].Ipv4
+      isBlocked := m.BlockedMap[ip]
+      cmds = append(cmds, getPingToIp(i, ip, isBlocked))
+    }
+  }
+  return tea.Batch(cmds...)
 }
 
 func (m *model) refreshRelays() tea.Cmd {
-	m.Pings = make(map[int]time.Duration)
-	m.Pinged = 0
-
-	for i, pop := range m.Relays {
-		// if the ip is blocked, add is as -1 so we can use it
-		if len(pop.Relays) > 0 && firewall.IsIpBlocked(pop.Relays[0].Ipv4) {
-			m.Pings[i] = -1
-			m.Pinged++
-		}
-	}
-	return m.pingBatch(0)
+  m.Pings = make(map[int]time.Duration)
+  m.Pinged = 0
+  return m.pingBatch(0)
 }
 
 func blockIps(cfg *config.Config) tea.Cmd {
@@ -108,9 +102,20 @@ func loadPresets() tea.Cmd {
 }
 
 func (m *model) updateStatus() tea.Cmd {
-	return func() tea.Msg {
-		ipsCount := fs.GetFileLineCount(m.cfg.IpsPath)
-		blockedCount, _ := firewall.GetBlockedIpCount()
-		return statusMsg{ipsCount: ipsCount, blockedCount: blockedCount}
-	}
+  return func() tea.Msg {
+    ipsCount := fs.GetFileLineCount(m.cfg.IpsPath)
+    blockedMap := firewall.GetBlockedIps()
+    return statusMsg{
+      ipsCount:     ipsCount,
+      blockedCount: len(blockedMap),
+      blockedMap:   blockedMap,
+    }
+  }
+}
+
+func writeIps(m *model) tea.Cmd {
+  return func() tea.Msg {
+    ips.WriteIpsToFile(m.getUnSelectedIps(), m.cfg)
+    return firewallMsg{}
+  }
 }

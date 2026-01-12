@@ -17,6 +17,7 @@ type isFileEmptyMsg bool
 type statusMsg struct {
 	ipsCount     int
 	blockedCount int
+	blockedMap   map[string]bool
 }
 
 type pingMsg struct {
