@@ -4,17 +4,18 @@ import (
 	"io"
 	"log"
 	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/BurntSushi/toml"
 	"github.com/spf13/pflag"
 
 	"github.com/dom1torii/yet-another-server-picker/internal/fs"
 )
 
 type Config struct {
-	IpsPath  string
-	LogsPath string
-	Logging  bool
+	Ips IpsConfig `toml:"ips"`
+	Log LogConfig `toml:"logging"`
 
 	// cli mode
 	ListRelays    bool
@@ -27,15 +28,40 @@ type Config struct {
 	BlockedCount  bool
 }
 
+type IpsConfig struct {
+	Path string `toml:"path"`
+}
+
+type LogConfig struct {
+	Enabled bool   `toml:"enabled"`
+	Path    string `toml:"path"`
+}
+
 func Init() *Config {
 	cfg := &Config{}
 
-	defaultIpsPath := fs.GetHomeDir() + "/yasp_ips.txt"
-	defaultLogPath := fs.GetHomeDir() + "/yasp.log"
+	homeDir := fs.GetHomeDir()
 
-	ipsPath := pflag.StringP("ipspath", "i", defaultIpsPath, "Specify custom ips path path. Default path: {homedir}/yasp_ips.txt")
-	logFlag := pflag.BoolP("log", "l", false, "Enable logging. Default path: {homedir}/yasp.log")
-	logPath := pflag.String("logpath", "", "Specify custom log file path.")
+	configDir := filepath.Join(homeDir, ".config", "yasp")
+	configFile := filepath.Join(configDir, "config.toml")
+
+	defaultIpsPath := filepath.Join(homeDir, "yasp_ips.txt")
+	defaultLogPath := filepath.Join(homeDir, "yasp.log")
+
+	fs.EnsureDirectory(configFile)
+
+	info, err := os.Stat(configFile)
+	if err == nil && info.Size() == 0 {
+		defaultConfig(configFile, defaultIpsPath, defaultLogPath)
+	}
+
+	if _, err := toml.DecodeFile(configFile, cfg); err != nil {
+		log.Fatalln("Failed to decode config: ", err)
+	}
+
+	ipsPath := pflag.StringP("ipspath", "i", getFlag(cfg.Ips.Path, defaultIpsPath), "Specify custom ips path path. Default path: {homedir}/yasp_ips.txt")
+	logFlag := pflag.BoolP("log", "l", cfg.Log.Enabled, "Enable logging. Default path: {homedir}/yasp.log")
+	logPath := pflag.String("logpath", getFlag(cfg.Log.Path, defaultLogPath), "Specify custom log file path.")
 
 	listRelays := pflag.Bool("listrelays", false, "List available relays")
 	selectRelays := pflag.String("selectrelays", "", "Select relays from the list (separated with comma)")
@@ -48,8 +74,22 @@ func Init() *Config {
 
 	pflag.Parse()
 
-	fs.EnsureDirectory(*ipsPath)
-	cfg.IpsPath = *ipsPath
+	cfg.Ips.Path = *ipsPath
+	cfg.Log.Path = *logPath
+
+	isLogFlagSet := pflag.Lookup("log").Changed
+	isPathFlagSet := pflag.Lookup("logpath").Changed
+
+	fs.EnsureDirectory(cfg.Ips.Path)
+
+	// we can just use --logpath instead of using both -l and --logpath to enable logging + change path
+	if isLogFlagSet || isPathFlagSet || cfg.Log.Enabled {
+		if isLogFlagSet && !*logFlag {
+			cfg.Log.Enabled = false
+		} else {
+			cfg.Log.Enabled = true
+		}
+	}
 
 	cfg.ListRelays = *listRelays
 	if *selectRelays != "" {
@@ -62,19 +102,14 @@ func Init() *Config {
 	cfg.ListPresets = *listPresets
 	cfg.SelectPreset = *selectPreset
 
-	if *logFlag {
-		path := *logPath
-		if path == "" {
-			path = defaultLogPath
-		}
-
-		fs.EnsureDirectory(path)
-		cfg.LogsPath = path
-		initLogger(path)
-		log.Println("Started logging.")
+	if cfg.Log.Enabled {
+		fs.EnsureDirectory(cfg.Log.Path)
+		initLogger(cfg.Log.Path)
+		log.Println("Started logging at: ", cfg.Log.Path)
 	} else {
 		log.SetOutput(io.Discard)
 	}
+
 	return cfg
 }
 
@@ -85,4 +120,30 @@ func initLogger(loc string) {
 	}
 	log.SetOutput(f)
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
+}
+
+func defaultConfig(path, defaultIps, defaultLog string) {
+	// fix windows paths
+	defaultIps = strings.ReplaceAll(defaultIps, "\\", "\\\\")
+	defaultLog = strings.ReplaceAll(defaultLog, "\\", "\\\\")
+
+	content := []byte(strings.Join([]string{
+		"[ips]",
+		"path = \"" + defaultIps + "\"",
+		"",
+		"[logging]",
+		"enabled = false",
+		"path = \"" + defaultLog + "\"",
+	}, "\n"))
+
+	if err := os.WriteFile(path, content, 0644); err != nil {
+		log.Fatalln("Failed to write default config: ", err)
+	}
+}
+
+func getFlag(value, fallback string) string {
+	if value == "" {
+		return fallback
+	}
+	return value
 }

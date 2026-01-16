@@ -103,7 +103,7 @@ func loadPresets() tea.Cmd {
 
 func (m *model) updateStatus() tea.Cmd {
 	return func() tea.Msg {
-		ipsCount := fs.GetFileLineCount(m.cfg.IpsPath)
+		ipsCount := fs.GetFileLineCount(m.cfg.Ips.Path)
 		blockedMap := firewall.GetBlockedIps()
 		return statusMsg{
 			ipsCount:     ipsCount,

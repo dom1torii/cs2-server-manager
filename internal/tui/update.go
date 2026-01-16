@@ -186,7 +186,7 @@ func (m *model) updateRelaySelection(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.RelaysChecked[m.RelaysSelection] = struct{}{}
 			}
 		case "enter":
-			return m, isFileEmpty(m.cfg.IpsPath)
+			return m, isFileEmpty(m.cfg.Ips.Path)
 		}
 
 	}

@@ -101,7 +101,7 @@ func HandleFlags(cfg *config.Config) {
 		firewall.UnBlockIps(nil)
 	}
 	if cfg.ToBlockCount {
-		fmt.Println(fs.GetFileLineCount(cfg.IpsPath))
+		fmt.Println(fs.GetFileLineCount(cfg.Ips.Path))
 	}
 	if cfg.BlockedCount {
 		fmt.Println(len(firewall.GetBlockedIps()))

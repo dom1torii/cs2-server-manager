@@ -3,6 +3,7 @@ module github.com/dom1torii/yet-another-server-picker
 go 1.25.4
 
 require (
+	github.com/BurntSushi/toml v1.6.0
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/muesli/reflow v0.3.0

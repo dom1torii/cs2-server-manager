@@ -24,7 +24,7 @@ var (
 	statusWarningStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
 	helpStyle             = lipgloss.NewStyle().Foreground(lipgloss.Color("8")).PaddingLeft(4).PaddingBottom(1)
 	modeAllowStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
-	modeBlockStyle        =	lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
+	modeBlockStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
 )
 
 type sessionState int

@@ -14,7 +14,7 @@ import (
 
 func BlockIps(cfg *config.Config, onDone func()) {
 	UnBlockIps(onDone)
-	ipsFile := cfg.IpsPath
+	ipsFile := cfg.Ips.Path
 
 	chain := "OUTPUT"
 	customChain := "CS2_BLOCKLIST"

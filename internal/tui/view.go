@@ -77,44 +77,44 @@ func (m *model) startView() string {
 }
 
 func checkbox(label string, pingMs string, isSelected bool, isChecked bool, mode string) string {
-  var indicator string
-  var indicatorStyle, labelStyle lipgloss.Style
+	var indicator string
+	var indicatorStyle, labelStyle lipgloss.Style
 
-  if mode == "block" {
-    if isChecked {
-      indicator = "[✖]"
-      indicatorStyle = crossedStyle
-    } else {
-      indicator = "[ ]"
-    }
-    if isSelected {
-      indicatorStyle = crossedSelectionStyle
-      labelStyle = selectionStyle
-    }
-  } else {
-    if isChecked {
-      indicator = "[✓]"
-      indicatorStyle = checkedStyle
-    } else {
-      indicator = "[ ]"
-    }
-    if isSelected {
-      indicatorStyle = checkedSelectionStyle
-      labelStyle = selectionStyle
-    }
-  }
+	if mode == "block" {
+		if isChecked {
+			indicator = "[✖]"
+			indicatorStyle = crossedStyle
+		} else {
+			indicator = "[ ]"
+		}
+		if isSelected {
+			indicatorStyle = crossedSelectionStyle
+			labelStyle = selectionStyle
+		}
+	} else {
+		if isChecked {
+			indicator = "[✓]"
+			indicatorStyle = checkedStyle
+		} else {
+			indicator = "[ ]"
+		}
+		if isSelected {
+			indicatorStyle = checkedSelectionStyle
+			labelStyle = selectionStyle
+		}
+	}
 
-  if isSelected && !isChecked {
-    indicatorStyle = selectionStyle
-  }
+	if isSelected && !isChecked {
+		indicatorStyle = selectionStyle
+	}
 
-  return lipgloss.JoinHorizontal(
-    lipgloss.Center,
-    indicatorStyle.Render(indicator),
-    labelStyle.Render(" " + label),
-    " ",
-    pingMs,
-  )
+	return lipgloss.JoinHorizontal(
+		lipgloss.Center,
+		indicatorStyle.Render(indicator),
+		labelStyle.Render(" "+label),
+		" ",
+		pingMs,
+	)
 }
 
 func (m *model) relaysView() string {
@@ -227,7 +227,7 @@ func (m *model) relaysView() string {
 
 	view := fmt.Sprintf(
 		"%s\n%s\n\n%s\n\n%s\n%s",
-		titleStyle.Render("Select servers to ") + currentMode,
+		titleStyle.Render("Select servers to ")+currentMode,
 		topIndicator,
 		columns,
 		bottomIndicator,

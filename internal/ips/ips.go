@@ -12,7 +12,7 @@ import (
 )
 
 func WriteIpsToFile(ips []string, cfg *config.Config) {
-	ipsFile := cfg.IpsPath
+	ipsFile := cfg.Ips.Path
 	file, err := os.Create(ipsFile)
 	if err != nil {
 		log.Fatalln("Failed to create file: ", err)
