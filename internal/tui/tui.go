@@ -12,6 +12,8 @@ var (
 	selectionStyle        = lipgloss.NewStyle().Background(lipgloss.Color("8"))
 	checkedStyle          = lipgloss.NewStyle().Foreground(lipgloss.Color("10")).Bold(true)
 	checkedSelectionStyle = lipgloss.NewStyle().Background(lipgloss.Color("8")).Foreground(lipgloss.Color("2")).Bold(true)
+	crossedStyle          = lipgloss.NewStyle().Foreground(lipgloss.Color("9")).Bold(true)
+	crossedSelectionStyle = lipgloss.NewStyle().Background(lipgloss.Color("8")).Foreground(lipgloss.Color("1")).Bold(true)
 	goodPingStyle         = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
 	badPingStyle          = lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
 	blockedPingStyle      = lipgloss.NewStyle().Foreground(lipgloss.Color("178"))
@@ -21,6 +23,8 @@ var (
 	statusOkStyle         = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
 	statusWarningStyle    = lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
 	helpStyle             = lipgloss.NewStyle().Foreground(lipgloss.Color("8")).PaddingLeft(4).PaddingBottom(1)
+	modeAllowStyle        = lipgloss.NewStyle().Foreground(lipgloss.Color("2"))
+	modeBlockStyle        =	lipgloss.NewStyle().Foreground(lipgloss.Color("1"))
 )
 
 type sessionState int
@@ -46,6 +50,8 @@ type model struct {
 	BlockedMap      map[string]bool
 	PresetKeys      []string
 
+	Mode string
+
 	IpsCount     int
 	BlockedCount int
 
@@ -64,6 +70,8 @@ func InitialModel(cfg *config.Config) *model {
 		RelaysChecked:   make(map[int]struct{}),
 		BlockedMap:      make(map[string]bool),
 		Pings:           make(map[int]time.Duration),
+
+		Mode: "allow",
 
 		StartSelection:  0,
 		PresetSelection: 0,

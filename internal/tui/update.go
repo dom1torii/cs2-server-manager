@@ -155,6 +155,13 @@ func (m *model) updateRelaySelection(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "esc", "q":
 			m.state = stateStart
 			return m, nil
+		case "t":
+			if m.Mode == "allow" {
+				m.Mode = "block"
+			} else {
+				m.Mode = "allow"
+			}
+			return m, nil
 		case "j", "down":
 			if m.RelaysSelection < len(m.Relays)-1 {
 				m.RelaysSelection++
@@ -200,7 +207,11 @@ func (m *model) updateConfirmSelection(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "enter":
 			if m.ConfirmSelection {
-				ips.WriteIpsToFile(m.getUnSelectedIps(), m.cfg)
+				if m.Mode == "allow" {
+					ips.WriteIpsToFile(m.getUnSelectedIps(), m.cfg)
+				} else {
+					ips.WriteIpsToFile(m.getSelectedIps(), m.cfg)
+				}
 				m.state = stateStart
 				return m, m.updateStatus()
 			}

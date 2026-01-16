@@ -76,17 +76,45 @@ func (m *model) startView() string {
 	)
 }
 
-func checkbox(label string, pingMs string, isSelected bool, isChecked bool) string {
-	if isSelected {
-		if isChecked {
-			return checkedSelectionStyle.Render("[✓] ") + selectionStyle.Render(label) + " " + pingMs
-		}
-		return selectionStyle.Render("[ ] "+label) + " " + pingMs
-	}
-	if isChecked {
-		return checkedStyle.Render("[✓] ") + label + " " + pingMs
-	}
-	return fmt.Sprintf("[ ] %s", label) + " " + pingMs
+func checkbox(label string, pingMs string, isSelected bool, isChecked bool, mode string) string {
+  var indicator string
+  var indicatorStyle, labelStyle lipgloss.Style
+
+  if mode == "block" {
+    if isChecked {
+      indicator = "[✖]"
+      indicatorStyle = crossedStyle
+    } else {
+      indicator = "[ ]"
+    }
+    if isSelected {
+      indicatorStyle = crossedSelectionStyle
+      labelStyle = selectionStyle
+    }
+  } else {
+    if isChecked {
+      indicator = "[✓]"
+      indicatorStyle = checkedStyle
+    } else {
+      indicator = "[ ]"
+    }
+    if isSelected {
+      indicatorStyle = checkedSelectionStyle
+      labelStyle = selectionStyle
+    }
+  }
+
+  if isSelected && !isChecked {
+    indicatorStyle = selectionStyle
+  }
+
+  return lipgloss.JoinHorizontal(
+    lipgloss.Center,
+    indicatorStyle.Render(indicator),
+    labelStyle.Render(" " + label),
+    " ",
+    pingMs,
+  )
 }
 
 func (m *model) relaysView() string {
@@ -99,6 +127,15 @@ func (m *model) relaysView() string {
 			"Loading servers data...",
 		)
 	}
+
+	currentMode := ""
+
+	if m.Mode == "allow" {
+		currentMode = modeAllowStyle.Render("allow")
+	} else {
+		currentMode = modeBlockStyle.Render("block")
+	}
+
 	// create checkboxes
 	var checkboxes []string
 	for i, pop := range m.Relays {
@@ -130,7 +167,7 @@ func (m *model) relaysView() string {
 			}
 		}
 
-		checkboxes = append(checkboxes, checkbox(label, pingDisplay, m.RelaysSelection == i, checked))
+		checkboxes = append(checkboxes, checkbox(label, pingDisplay, m.RelaysSelection == i, checked, m.Mode))
 	}
 
 	// create 2 columns
@@ -185,17 +222,16 @@ func (m *model) relaysView() string {
 		bottomIndicator = "↓ more"
 	}
 
-	\n
 	topIndicator = lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render(topIndicator)
 	bottomIndicator = lipgloss.NewStyle().Foreground(lipgloss.Color("8")).Render(bottomIndicator)
 
 	view := fmt.Sprintf(
 		"%s\n%s\n\n%s\n\n%s\n%s",
-		titleStyle.Render("Select servers to play on"),
+		titleStyle.Render("Select servers to ") + currentMode,
 		topIndicator,
 		columns,
 		bottomIndicator,
-		wordwrap.String(helpStyle.Render("(←↓↑→: move | space: select | enter: apply | q/esc: back)"), m.width),
+		wordwrap.String(helpStyle.Render("(←↓↑→: move | space: select | enter: apply | t: toggle block/allow | q/esc: back)"), m.width),
 	)
 
 	return lipgloss.Place(
