@@ -47,12 +47,12 @@ scoop install cs2/yasp
 3. `cd` into the folder
 4. Run `go build ./cmd/yasp/`
 
-## Planned features
+<!--## Planned features
 
 - ~~Toggle between blocking/allowing servers instead of just allowing~~ (added in latest commit)
 - Global/China version switch
 - Settings and ~~config file~~ (config file added in latest commit)
-
+-->
 ## Notes
 
 The tool is not fully accurate and sometimes will connect you to server that are **routed** through the server you chose. 
